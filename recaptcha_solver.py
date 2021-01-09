@@ -25,10 +25,8 @@ from selenium.webdriver.chrome.options import Options
 
 #recaptcha libraries
 import speech_recognition as sr
-import ffmpy
 import requests
 import urllib
-import pydub
 
 def delay ():
     time.sleep(random.randint(2,3))
@@ -73,14 +71,16 @@ src = driver.find_element_by_id("audio-source").get_attribute("src")
 print("[INFO] Audio src: %s"%src)
 #download the mp3 audio file from the source
 urllib.request.urlretrieve(src, os.getcwd()+"\\sample.mp3")
-sound = pydub.AudioSegment.from_mp3(os.getcwd()+"\\sample.mp3")
-sound.export(os.getcwd()+"\\sample.wav", format="wav")
+import subprocess
+subprocess.call([os.getcwd()+"\\ffmpeg\\bin\\ffmpeg.exe", '-i', 'sample.mp3', 'sample.wav'])
 sample_audio = sr.AudioFile(os.getcwd()+"\\sample.wav")
 r= sr.Recognizer()
 
 with sample_audio as source:
     audio = r.record(source)
-
+    
+os.remove(os.getcwd()+"\\sample.mp3")
+os.remove(os.getcwd()+"\\sample.wav")
 #translate audio to text with google voice recognition
 key=r.recognize_google(audio)
 print("[INFO] Recaptcha Passcode: %s"%key)

@@ -28,10 +28,8 @@ from selenium.webdriver.chrome.options import Options
 
 #recaptcha libraries
 import speech_recognition as sr
-import ffmpy
 import requests
 import urllib
-import pydub
 
 #Networking Libraries
 from spoofmac.util import random_mac_address, MAC_ADDRESS_R, normalize_mac_address
@@ -131,14 +129,15 @@ while(True):
             print("[INFO] Audio src: %s"%src)
             #download the mp3 audio file from the source
             urllib.request.urlretrieve(src, os.getcwd()+"\\sample.mp3")
-            sound = pydub.AudioSegment.from_mp3(os.getcwd()+"\\sample.mp3")
-            sound.export(os.getcwd()+"\\sample.wav", format="wav")
+            subprocess.call([os.getcwd()+"\\ffmpeg\\bin\\ffmpeg.exe", '-i', 'sample.mp3', 'sample.wav'])
             sample_audio = sr.AudioFile(os.getcwd()+"\\sample.wav")
             r= sr.Recognizer()
             
             with sample_audio as source:
                 audio = r.record(source)
             
+            os.remove(os.getcwd()+"\\sample.mp3")
+            os.remove(os.getcwd()+"\\sample.wav")
             #translate audio to text with google voice recognition
             key=r.recognize_google(audio)
             print("[INFO] Recaptcha Passcode: %s"%key)
@@ -160,7 +159,8 @@ while(True):
             delay(10,10)
         driver.close()
         driver.quit()    
-    except:
+    except Exception as e:
+        print('[FRROR] '+ str(e))
         count_failures+=1
         print("[WARN] Something went wrong. Total Loops: %d, Total Failures %d"%(count_loops,count_failures))
         print("[INFO] Reopening Driver")
