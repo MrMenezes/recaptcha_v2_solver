@@ -23,7 +23,7 @@ import speech_recognition as sr
 
 def recognize():
     import subprocess
-    subprocess.Popen(["ffmpeg", "-y", "-i", "sample.mp3", "sample.wav"]).wait()
+    subprocess.Popen(["ffmpeg/bin/ffmpeg.exe", "-y", "-i", "sample.mp3", "sample.wav"]).wait()
     sample_audio = sr.AudioFile(os.getcwd()+"\\sample.wav")
     r= sr.Recognizer()
 
